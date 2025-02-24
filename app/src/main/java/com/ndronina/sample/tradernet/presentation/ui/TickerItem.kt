@@ -4,10 +4,10 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.sizeIn
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
@@ -16,7 +16,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -37,16 +36,18 @@ fun TickerItem(uiModel: TickerUiModel) {
 
         if (!uiModel.imageUrl.isNullOrEmpty()) {
             Image(
-                painter = rememberAsyncImagePainter(uiModel.imageUrl),
-                contentDescription = uiModel.contentDescription,
-                contentScale = ContentScale.Crop,
+                painter = rememberAsyncImagePainter(model = uiModel.imageUrl),
+                contentDescription = "Image",
                 modifier = Modifier
                     .constrainAs(image) {
                         start.linkTo(parent.start)
                         top.linkTo(parent.top)
                     }
-                    .width(20.dp)
-                    .height(28.dp)
+                    .wrapContentSize()
+                    .sizeIn(
+                        maxWidth = 20.dp,
+                        maxHeight = 28.dp
+                    )
             )
         }
 
@@ -58,8 +59,8 @@ fun TickerItem(uiModel: TickerUiModel) {
             overflow = TextOverflow.Ellipsis,
             modifier = Modifier
                 .constrainAs(leftTitle) {
-                    start.linkTo(image.end, margin = 8.dp)
-                    top.linkTo(image.top)
+                    start.linkTo(image.end)
+                    top.linkTo(parent.top)
                     bottom.linkTo(image.bottom)
                 }
                 .fillMaxWidth(0.6f)
@@ -83,7 +84,7 @@ fun TickerItem(uiModel: TickerUiModel) {
             modifier = Modifier
                 .constrainAs(rightTitle) {
                     end.linkTo(arrow.start)
-                    top.linkTo(parent.top)
+                    top.linkTo(leftTitle.top)
                 }
                 .background(
                     color = uiModel.rightTitleBackground,

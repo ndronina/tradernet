@@ -10,8 +10,9 @@ import com.ndronina.sample.tradernet.presentation.mapper.TickerUiMapper
 import com.ndronina.sample.tradernet.presentation.model.TickerUiModel
 import com.ndronina.sample.tradernet.presentation.model.UiState
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -23,43 +24,59 @@ class TickersViewModel @Inject constructor(
 ) : ViewModel() {
 
     private var currentTickers = mutableMapOf<String, TickerUiModel>()
+    private var stateJob: Job? = null
 
-    private val _state = MutableStateFlow(UiState())
-    val state: StateFlow<UiState> = _state
+    private val _state = MutableSharedFlow<UiState>(replay = 1)
+    val state: Flow<UiState> = _state
 
     init {
         observeState()
     }
 
     private fun observeState() {
-        viewModelScope.launch {
+        stateJob?.cancel()
+        stateJob = viewModelScope.launch {
             getSampleTickersUseCase().collect(::handleResource)
         }
     }
 
-    private fun handleResource(resource: Resource<Ticker>) {
+
+    private suspend fun handleResource(resource: Resource<Ticker>) {
         when (resource) {
             is Resource.Success -> {
                 val data = resource.data
                 val isInitial = !currentTickers.containsKey(data.name)
                 currentTickers[data.name] = tickerUiMapper.map(data, isInitial)
-                _state.value = UiState(
-                    data = currentTickers.values.toList(),
-                    isLoading = false
+                _state.emit(
+                    UiState(
+                        data = currentTickers.values.toList(),
+                        isLoading = false
+                    )
                 )
             }
             is Resource.Error -> {
                 if (currentTickers.isEmpty()) {
-                    _state.value = UiState(
-                        isLoading = false,
-                        errorMessage = resource.message
+                    _state.emit(
+                        UiState(
+                            isLoading = false,
+                            errorMessage = resource.message
+                        )
                     )
                 }
             }
         }
     }
 
+    fun onRetry() {
+        viewModelScope.launch {
+            clearSampleTickersUseCase()
+            _state.emit(UiState())
+            observeState()
+        }
+    }
+
     override fun onCleared() {
+        stateJob?.cancel()
         clearSampleTickersUseCase()
         super.onCleared()
     }

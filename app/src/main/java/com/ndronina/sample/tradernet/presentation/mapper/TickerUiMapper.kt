@@ -15,12 +15,24 @@ class TickerUiMapper @Inject constructor() {
             imageUrl = from.companyLogo,
             contentDescription = "${from.name} logo",
             leftTitle = from.name,
-            leftSubtitle = "${from.stockExchangeName} | ${from.paperName}",
+            leftSubtitle = mapLeftSubtitle(from),
             rightTitle = mapRightTitle(from),
             rightSubtitle = mapRightSubtitle(from),
             rightTitleColor = mapTitleColor(from, isInitialValue),
             rightTitleBackground = mapTitleBackground(from, isInitialValue)
         )
+    }
+
+    private fun mapLeftSubtitle(from: Ticker): String {
+        return if (from.stockExchangeName.isNotEmpty() && from.paperName.isNotEmpty()) {
+            "${from.stockExchangeName} | ${from.paperName}"
+        } else if (from.stockExchangeName.isEmpty() && from.paperName.isNotEmpty()) {
+            from.paperName
+        } else if (from.stockExchangeName.isNotEmpty() && from.paperName.isEmpty()) {
+            from.stockExchangeName
+        } else {
+            ""
+        }
     }
 
     private fun mapRightTitle(from: Ticker): String {

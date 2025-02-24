@@ -30,6 +30,7 @@ class WebSocketService @Inject constructor(
     val tickers: Flow<Resource<TickerDto>> = _tickers
 
     fun connect(tickers: List<String>) {
+        android.util.Log.d(TAG, CONNECT_MESSAGE)
         val request = Request.Builder()
             .url(BuildConfig.WEBSOCKET_URL)
             .build()
@@ -71,6 +72,7 @@ class WebSocketService @Inject constructor(
         const val CONNECT_TIME_OUT_S = 10L
         const val READ_TIME_OUT_MS = 0L
         const val CLOSE_CODE = 1000
+        const val CONNECT_MESSAGE = "Connecting"
         const val CLOSE_MESSAGE = "Disconnected"
     }
 }

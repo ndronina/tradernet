@@ -2,6 +2,8 @@ package com.ndronina.sample.tradernet.presentation.ui
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -20,6 +22,9 @@ fun SuccessState(modifier: Modifier, data: List<TickerUiModel>) {
         verticalArrangement = Arrangement.spacedBy(8.dp),
         contentPadding = PaddingValues(bottom = 16.dp)
     ) {
+        item {
+            Spacer(modifier = Modifier.height(8.dp))
+        }
         itemsIndexed(data) { idx, uiModel ->
             TickerItem(uiModel)
             if (idx < data.lastIndex) {
