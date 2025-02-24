@@ -1,3 +1,11 @@
+# Tradernet Sample App
+
+## App Screenshot
+
+<img src="https://github.com/ndronina/tradernet/blob/main/Screenshot.png?raw=true" alt="description" width="300"/>
+
+## Requirements
+
 Functional requirements:
 - В приложении один экран - таблица со списком котировок
 - Данные обновляются динамически в реальном времени
@@ -30,7 +38,7 @@ Out of scope:
 - Округление значений
 - Запрос котировок из API
 
-Implementation:
+## Implementation
 - Tech Stack: Kotlin, Kotlin DSL, Jetpack Compose, Okhttp, Dagger Hilt, Coil
 - Single module
 - Single activity + Composable
