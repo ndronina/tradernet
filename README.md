@@ -1,8 +1,8 @@
 # Tradernet Sample App
 
-## App Screenshot
+## App Demo
 
-<img src="https://github.com/ndronina/tradernet/blob/main/Screenshot.png?raw=true" alt="description" width="300"/>
+<img src="https://github.com/ndronina/tradernet/blob/main/Demo.gif" width="300" />
 
 ## Requirements
 
