@@ -44,8 +44,12 @@ class TickersViewModel @Inject constructor(
         val data = result.getOrNull() ?: return
         when {
             result.isSuccess -> {
-                val isInitial = !currentTickers.containsKey(data.name)
-                currentTickers[data.name] = tickerUiMapper.map(data, isInitial)
+                val current = currentTickers[data.name]
+                if (currentTickers.containsKey(data.name) && current != null) {
+                    currentTickers[data.name] = tickerUiMapper.map(current, data)
+                } else {
+                    currentTickers[data.name] = tickerUiMapper.map(data)
+                }
                 _state.emit(
                     UiState(
                         data = currentTickers.values.toList(),

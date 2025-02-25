@@ -10,7 +10,20 @@ import javax.inject.Inject
 
 class TickerUiMapper @Inject constructor() {
 
-    fun map(from: Ticker, isInitialValue: Boolean = true): TickerUiModel {
+    fun map(current: TickerUiModel, updated: Ticker): TickerUiModel {
+        return TickerUiModel(
+            imageUrl = updated.companyLogo?.ifEmpty { current.imageUrl } ?: current.imageUrl,
+            contentDescription = current.contentDescription,
+            leftTitle = updated.name.ifEmpty { current.leftTitle },
+            leftSubtitle = mapLeftSubtitle(updated).ifEmpty { current.leftSubtitle },
+            rightTitle = mapRightTitle(updated),
+            rightSubtitle = mapRightSubtitle(updated),
+            rightTitleColor = mapTitleColor(updated, isInitialValue = false),
+            rightTitleBackground = mapTitleBackground(updated, isInitialValue = false)
+        )
+    }
+
+    fun map(from: Ticker): TickerUiModel {
         return TickerUiModel(
             imageUrl = from.companyLogo,
             contentDescription = "${from.name} logo",
@@ -18,8 +31,8 @@ class TickerUiMapper @Inject constructor() {
             leftSubtitle = mapLeftSubtitle(from),
             rightTitle = mapRightTitle(from),
             rightSubtitle = mapRightSubtitle(from),
-            rightTitleColor = mapTitleColor(from, isInitialValue),
-            rightTitleBackground = mapTitleBackground(from, isInitialValue)
+            rightTitleColor = mapTitleColor(from, isInitialValue = true),
+            rightTitleBackground = mapTitleBackground(from, isInitialValue = true)
         )
     }
 
