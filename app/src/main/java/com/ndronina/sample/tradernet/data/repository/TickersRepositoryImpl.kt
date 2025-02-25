@@ -21,13 +21,12 @@ class TickersRepositoryImpl @Inject constructor(
 
     override fun observeTickers(): Flow<Result<Ticker>> {
         return webSocketService.tickers.mapNotNull { result ->
-            val data = result.getOrNull() ?: return@mapNotNull null
-            if (result.isSuccess && tickerValidator.validate(data)) {
-                result.map {
-                    tickerDto -> mapper.map(tickerDto, BASE_LOGO_URL)
-                }
-            } else {
-                null
+            if (result.isSuccess) {
+                val data = result.getOrNull() ?: return@mapNotNull null
+                if (!tickerValidator.validate(data)) return@mapNotNull null
+            }
+            result.map { tickerDto ->
+                mapper.map(tickerDto, BASE_LOGO_URL)
             }
         }
     }

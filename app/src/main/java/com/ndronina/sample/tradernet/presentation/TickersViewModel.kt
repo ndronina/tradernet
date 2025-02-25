@@ -41,21 +41,24 @@ class TickersViewModel @Inject constructor(
 
 
     private suspend fun handleResult(result: Result<Ticker>) {
-        val data = result.getOrNull() ?: return
+        val data = result.getOrNull()
+        if (result.isSuccess && data == null) return
         when {
             result.isSuccess -> {
-                val current = currentTickers[data.name]
-                if (currentTickers.containsKey(data.name) && current != null) {
-                    currentTickers[data.name] = tickerUiMapper.map(current, data)
-                } else {
-                    currentTickers[data.name] = tickerUiMapper.map(data)
-                }
-                _state.emit(
-                    UiState(
-                        data = currentTickers.values.toList(),
-                        isLoading = false
+                data?.let {
+                    val current = currentTickers[data.name]
+                    if (currentTickers.containsKey(data.name) && current != null) {
+                        currentTickers[data.name] = tickerUiMapper.map(current, data)
+                    } else {
+                        currentTickers[data.name] = tickerUiMapper.map(data)
+                    }
+                    _state.emit(
+                        UiState(
+                            data = currentTickers.values.toList(),
+                            isLoading = false
+                        )
                     )
-                )
+                }
             }
             result.isFailure -> {
                 if (currentTickers.isEmpty()) {
