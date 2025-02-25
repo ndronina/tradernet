@@ -1,8 +1,7 @@
 package com.ndronina.sample.tradernet.data.repository
 
+import com.ndronina.sample.tradernet.data.TickerValidator
 import com.ndronina.sample.tradernet.data.mapper.TickerDtoMapper
-import com.ndronina.sample.tradernet.data.model.Resource
-import com.ndronina.sample.tradernet.data.model.TickerDto
 import com.ndronina.sample.tradernet.data.service.WebSocketService
 import com.ndronina.sample.tradernet.domain.TickersRepository
 import com.ndronina.sample.tradernet.domain.model.Ticker
@@ -16,23 +15,22 @@ private const val BASE_LOGO_URL = "https://tradernet.com/logos/get-logo-by-ticke
 @Singleton
 class TickersRepositoryImpl @Inject constructor(
     private val webSocketService: WebSocketService,
-    private val mapper: TickerDtoMapper
+    private val mapper: TickerDtoMapper,
+    private val tickerValidator: TickerValidator
 ) : TickersRepository {
 
-    override fun observeTickers(): Flow<Resource<Ticker>> {
-        return webSocketService.tickers.mapNotNull { resource ->
-            if (resource is Resource.Success && isDataValid(resource.data)) {
-                resource.map {
-                        tickerDto -> mapper.map(tickerDto, BASE_LOGO_URL)
+    override fun observeTickers(): Flow<Result<Ticker>> {
+        return webSocketService.tickers.mapNotNull { result ->
+            val data = result.getOrNull() ?: return@mapNotNull null
+            if (result.isSuccess && tickerValidator.validate(data)) {
+                result.map {
+                    tickerDto -> mapper.map(tickerDto, BASE_LOGO_URL)
                 }
             } else {
                 null
             }
         }
     }
-
-    private fun isDataValid(ticker: TickerDto) =
-        !ticker.price.isNaN() && !ticker.priceChange.isNaN() && !ticker.changePercent.isNaN()
 
     override fun connectToSocket(tickers: List<String>) {
         webSocketService.connect(tickers)

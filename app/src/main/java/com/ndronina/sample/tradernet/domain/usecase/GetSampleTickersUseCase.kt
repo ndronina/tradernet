@@ -1,6 +1,5 @@
 package com.ndronina.sample.tradernet.domain.usecase
 
-import com.ndronina.sample.tradernet.data.model.Resource
 import com.ndronina.sample.tradernet.domain.TickerProvider
 import com.ndronina.sample.tradernet.domain.TickersRepository
 import com.ndronina.sample.tradernet.domain.model.Ticker
@@ -10,7 +9,7 @@ import javax.inject.Inject
 class GetSampleTickersUseCase @Inject constructor(
     private val repository: TickersRepository
 ) {
-    operator fun invoke(): Flow<Resource<Ticker>> {
+    operator fun invoke(): Flow<Result<Ticker>> {
         repository.connectToSocket(TickerProvider.sampleTickers)
         return repository.observeTickers()
     }

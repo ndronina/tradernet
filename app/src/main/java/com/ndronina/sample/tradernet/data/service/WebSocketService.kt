@@ -1,7 +1,6 @@
 package com.ndronina.sample.tradernet.data.service
 
 import com.ndronina.sample.tradernet.BuildConfig
-import com.ndronina.sample.tradernet.data.model.Resource
 import com.ndronina.sample.tradernet.data.model.TickerDto
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -26,8 +25,8 @@ class WebSocketService @Inject constructor(
 
     private var webSocket: WebSocket? = null
 
-    private val _tickers = MutableSharedFlow<Resource<TickerDto>>(replay = 1)
-    val tickers: Flow<Resource<TickerDto>> = _tickers
+    private val _tickers = MutableSharedFlow<Result<TickerDto>>(replay = 1)
+    val tickers: Flow<Result<TickerDto>> = _tickers
 
     fun connect(tickers: List<String>) {
         android.util.Log.d(TAG, CONNECT_MESSAGE)
@@ -45,14 +44,13 @@ class WebSocketService @Inject constructor(
 
             override fun onMessage(webSocket: WebSocket, text: String) {
                 tickersParser.parse(text)?.let {
-                    _tickers.tryEmit(Resource.Success(it))
+                    _tickers.tryEmit(Result.success(it))
                 }
             }
 
             override fun onFailure(webSocket: WebSocket, t: Throwable, response: Response?) {
-                val message = t.localizedMessage ?: t.message.toString()
-                android.util.Log.e(TAG, message)
-                _tickers.tryEmit(Resource.Error(message))
+                android.util.Log.e(TAG, t.localizedMessage ?: t.message.toString())
+                _tickers.tryEmit(Result.failure(t))
             }
 
             override fun onClosing(webSocket: WebSocket, code: Int, reason: String) {

@@ -2,7 +2,6 @@ package com.ndronina.sample.tradernet.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.ndronina.sample.tradernet.data.model.Resource
 import com.ndronina.sample.tradernet.domain.model.Ticker
 import com.ndronina.sample.tradernet.domain.usecase.GetSampleTickersUseCase
 import com.ndronina.sample.tradernet.domain.usecase.ClearSampleTickersUseCase
@@ -36,15 +35,15 @@ class TickersViewModel @Inject constructor(
     private fun observeState() {
         stateJob?.cancel()
         stateJob = viewModelScope.launch {
-            getSampleTickersUseCase().collect(::handleResource)
+            getSampleTickersUseCase().collect(::handleResult)
         }
     }
 
 
-    private suspend fun handleResource(resource: Resource<Ticker>) {
-        when (resource) {
-            is Resource.Success -> {
-                val data = resource.data
+    private suspend fun handleResult(result: Result<Ticker>) {
+        val data = result.getOrNull() ?: return
+        when {
+            result.isSuccess -> {
                 val isInitial = !currentTickers.containsKey(data.name)
                 currentTickers[data.name] = tickerUiMapper.map(data, isInitial)
                 _state.emit(
@@ -54,12 +53,12 @@ class TickersViewModel @Inject constructor(
                     )
                 )
             }
-            is Resource.Error -> {
+            result.isFailure -> {
                 if (currentTickers.isEmpty()) {
                     _state.emit(
                         UiState(
                             isLoading = false,
-                            errorMessage = resource.message
+                            errorMessage = result.exceptionOrNull()?.message ?: ""
                         )
                     )
                 }

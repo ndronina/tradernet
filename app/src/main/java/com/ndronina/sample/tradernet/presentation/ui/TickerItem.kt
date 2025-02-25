@@ -32,7 +32,7 @@ fun TickerItem(uiModel: TickerUiModel) {
             .fillMaxWidth()
             .padding(horizontal = 12.dp, vertical = 8.dp)
     ) {
-        val (image, leftTitle, lestSubtitle, rightTitle, rightSubtitle, arrow) = createRefs()
+        val (image, leftTitle, leftSubtitle, rightTitle, rightSubtitle, arrow) = createRefs()
 
         if (!uiModel.imageUrl.isNullOrEmpty()) {
             Image(
@@ -61,7 +61,7 @@ fun TickerItem(uiModel: TickerUiModel) {
                 .constrainAs(leftTitle) {
                     start.linkTo(image.end)
                     top.linkTo(parent.top)
-                    bottom.linkTo(image.bottom)
+                    bottom.linkTo(rightSubtitle.top)
                 }
                 .fillMaxWidth(0.6f)
         )
@@ -73,7 +73,7 @@ fun TickerItem(uiModel: TickerUiModel) {
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
             modifier = Modifier
-                .constrainAs(lestSubtitle) {
+                .constrainAs(leftSubtitle) {
                     start.linkTo(parent.start)
                     top.linkTo(leftTitle.bottom)
                 }
@@ -103,8 +103,8 @@ fun TickerItem(uiModel: TickerUiModel) {
             modifier = Modifier
                 .constrainAs(rightSubtitle) {
                     end.linkTo(rightTitle.end)
-                    top.linkTo(lestSubtitle.top)
-                    bottom.linkTo(lestSubtitle.bottom)
+                    top.linkTo(leftSubtitle.top)
+                    bottom.linkTo(leftSubtitle.bottom)
                 }
                 .fillMaxWidth(0.4f)
             ,

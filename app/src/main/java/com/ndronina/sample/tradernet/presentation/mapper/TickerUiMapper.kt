@@ -24,68 +24,49 @@ class TickerUiMapper @Inject constructor() {
     }
 
     private fun mapLeftSubtitle(from: Ticker): String {
-        return if (from.stockExchangeName.isNotEmpty() && from.paperName.isNotEmpty()) {
-            "${from.stockExchangeName} | ${from.paperName}"
-        } else if (from.stockExchangeName.isEmpty() && from.paperName.isNotEmpty()) {
-            from.paperName
-        } else if (from.stockExchangeName.isNotEmpty() && from.paperName.isEmpty()) {
-            from.stockExchangeName
-        } else {
-            ""
+        return when {
+            from.stockExchangeName.isNotEmpty() && from.paperName.isNotEmpty() ->
+                "${from.stockExchangeName} | ${from.paperName}"
+            from.stockExchangeName.isEmpty() && from.paperName.isNotEmpty() ->
+                from.paperName
+            from.stockExchangeName.isNotEmpty() && from.paperName.isEmpty() ->
+                from.stockExchangeName
+            else -> ""
         }
     }
 
     private fun mapRightTitle(from: Ticker): String {
         val decimalFormat = DecimalFormat("0.00")
         val changePercentText = decimalFormat.format(from.changePercent)
-        return if (from.changePercent > 0.0) {
-            "+$changePercentText%"
-        } else if (from.changePercent < 0) {
-            "$changePercentText%"
-        } else {
-            "+0%"
+        return when {
+            from.changePercent > 0.0 -> "+$changePercentText%"
+            from.changePercent < 0.0 -> "$changePercentText%"
+            else -> "+0%"
         }
     }
 
     private fun mapRightSubtitle(from: Ticker): String {
-        val priceChangeText = if (from.priceChange >= 0) {
-            "+${from.priceChange}"
-        }
-        else {
-            "${from.priceChange}"
+        val priceChangeText = when {
+            from.changePercent >= 0.0 -> "+${from.priceChange}"
+            else -> "${from.priceChange}"
         }
         return "${from.price} ( $priceChangeText )"
     }
 
     private fun mapTitleColor(from: Ticker, isInitialValue: Boolean): Color {
-        return if (from.changePercent == 0.0) {
-            Color.Black
-        } else {
-            if (isInitialValue) {
-                if (from.changePercent > 0.0) {
-                    PositiveColor
-                } else {
-                    NegativeColor
-                }
-            } else {
-                Color.White
-            }
+        return when {
+            from.changePercent == 0.0 -> Color.Black
+            isInitialValue && from.changePercent > 0.0 -> PositiveColor
+            isInitialValue && from.changePercent < 0.0 -> NegativeColor
+            else -> Color.White
         }
     }
 
     private fun mapTitleBackground(from: Ticker, isInitialValue: Boolean): Color {
-        return if (from.changePercent == 0.0) {
-            Color.Transparent
-        } else {
-            if (isInitialValue) {
-                Color.Transparent
-            } else {
-                if (from.changePercent > 0.0) {
-                    PositiveColor
-                } else {
-                    NegativeColor
-                }
-            }
+        return when {
+            from.changePercent == 0.0 || isInitialValue -> Color.Transparent
+            from.changePercent > 0.0 -> PositiveColor
+            else -> NegativeColor
         }
     }
 }
