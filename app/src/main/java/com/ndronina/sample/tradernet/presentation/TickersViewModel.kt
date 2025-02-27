@@ -3,15 +3,14 @@ package com.ndronina.sample.tradernet.presentation
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ndronina.sample.tradernet.domain.model.Ticker
-import com.ndronina.sample.tradernet.domain.usecase.GetSampleTickersUseCase
 import com.ndronina.sample.tradernet.domain.usecase.ClearSampleTickersUseCase
+import com.ndronina.sample.tradernet.domain.usecase.GetSampleTickersUseCase
 import com.ndronina.sample.tradernet.presentation.mapper.TickerUiMapper
 import com.ndronina.sample.tradernet.presentation.model.TickerUiModel
 import com.ndronina.sample.tradernet.presentation.model.UiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -25,7 +24,7 @@ class TickersViewModel @Inject constructor(
     private var currentTickers = mutableMapOf<String, TickerUiModel>()
     private var stateJob: Job? = null
 
-    private val _state = MutableSharedFlow<UiState>(replay = 1)
+    private val _state = latestSharedFlow<UiState>()
     val state: Flow<UiState> = _state
 
     init {

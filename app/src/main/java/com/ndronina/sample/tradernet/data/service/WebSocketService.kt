@@ -2,8 +2,8 @@ package com.ndronina.sample.tradernet.data.service
 
 import com.ndronina.sample.tradernet.BuildConfig
 import com.ndronina.sample.tradernet.data.model.TickerDto
+import com.ndronina.sample.tradernet.presentation.latestSharedFlow
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableSharedFlow
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
@@ -25,7 +25,7 @@ class WebSocketService @Inject constructor(
 
     private var webSocket: WebSocket? = null
 
-    private val _tickers = MutableSharedFlow<Result<TickerDto>>(replay = 1)
+    private val _tickers = latestSharedFlow<Result<TickerDto>>()
     val tickers: Flow<Result<TickerDto>> = _tickers
 
     fun connect(tickers: List<String>) {
